@@ -1,10 +1,18 @@
 FROM k8s.gcr.io/kube-apiserver:v1.21.2
 
 # Install kubeadm, kubelet, and kubectl
-RUN apt-get update && apt-get install -y apt-transport-https curl
-RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-RUN echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
-RUN apt-get update && apt-get install -y kubelet kubeadm kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+RUN chmod +x./kubectl
+RUN mv./kubectl /usr/local/bin/kubectl
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kube-apiserver
+RUN chmod +x./kube-apiserver
+RUN mv./kube-apiserver /usr/local/bin/kube-apiserver
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kube-controller-manager
+RUN chmod +x./kube-controller-manager
+RUN mv./kube-controller-manager /usr/local/bin/kube-controller-manager
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kube-scheduler
+RUN chmod +x./kube-scheduler
+RUN mv./kube-scheduler /usr/local/bin/kube-scheduler
 
 # Initialize the Kubernetes cluster
 RUN kubeadm init --pod-network-cidr=10.244.0.0/16
