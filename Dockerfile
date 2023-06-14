@@ -1,6 +1,9 @@
-FROM k8s.gcr.io/kube-apiserver:v1.21.2
+FROM alpine:latest
 
-# Install kubeadm, kubelet, and kubectl
+# Install curl
+RUN apk add --no-cache curl
+
+# Install Kubernetes binaries
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
 RUN chmod +x./kubectl
 RUN mv./kubectl /usr/local/bin/kubectl
@@ -14,7 +17,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
 RUN chmod +x./kube-scheduler
 RUN mv./kube-scheduler /usr/local/bin/kube-scheduler
 
-# Initialize the Kubernetes cluster
+# Initialize the Kubernetes control plane
 RUN kubeadm init --pod-network-cidr=10.244.0.0/16
 
 # Copy the kubeconfig file to the default location
